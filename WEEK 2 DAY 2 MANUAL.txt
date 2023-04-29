@@ -1,0 +1,449 @@
+                                                                    LAB MANUAL DAY 2                                                     INDHUMATHI V
+                                                                                                                                                                   192124215   
+1.Consider two vectors: x=seq(1,43,along.with=Id)
+y=seq(-20,0,along.with=Id)
+Create a data frame ‘df’ as shown below.
+&gt;df
+Id Letter x y
+1 1 a 1.000000 -20.000000
+2 1 b 4.818182 -18.181818
+3 1 c 8.636364 -16.363636
+4 2 a 12.454545 -14.545455
+5 2 b 16.272727 -12.727273
+6 2 c 20.090909 -10.909091
+7 3 a 23.909091 -9.090909
+8 3 b 27.727273 -7.272727
+9 3 c 31.545455 -5.454545
+
+10 4 a 35.363636 -3.636364
+11 4 b 39.181818 -1.818182
+12 4 c 43.000000 0.000000
+ANS:
+# create the x and y vectors
+x <- seq(1, 43, along.with = Id)
+y <- seq(-20, 0, along.with = Id)
+
+# create the Id and Letter vectors
+Id <- rep(1:4, each = 3)
+Letter <- rep(letters[1:3], 4)
+
+# create the data frame
+df <- data.frame(Id, Letter, x, y)
+
+2.Using the data frame ‘df’ in Exercise1, Construct the following data frame. Id
+x.ay.ax.by.bx.cy.c 1 1 1.00000 -20.000000 4.818182 -18.181818
+8.636364 -16.363636 4 2 12.45455 -14.545455 16.272727 -12.727273
+20.090909 -10.909091 7 3 23.90909 -9.090909 27.727273 -7.272727
+31.545455 -5.454545 10 4 35.36364 -3.636364 39.181818 -1.818182
+43.000000 0.000000
+ANS:
+# select the rows for each letter and rearrange the columns
+df_a <- df[df$Letter == "a", c("Id", "x", "y")]
+df_b <- df[df$Letter == "b", c("Id", "y", "x")]
+df_c <- df[df$Letter == "c", c("Id", "x", "y")]
+df_x <- data.frame(Id = 1:4, x = df_b$y, y = df_a$x)
+df_y <- data.frame(Id = 1:4, x = df_c$x, y = df_b$x)
+
+# combine the data frames and rename the columns
+result <- cbind(df_a, df_x[, 2:3], df_y$y, df_c$y)
+colnames(result) <- c("Id", "x.ay", "y.ay", "x.ax", "y.ax", "x.by", "y.by", "x.bx", "y.bx", "x.cy", "y.cy", "x.c", "y.c")
+3.Create two data frame df1 and df2:
+&gt; df1
+Id Age
+1 1 14
+2 2 12
+3 3 15
+4 4 10
+&gt; df2
+Id Sex Code
+1 1 F a
+2 2 M b
+3 3 M c
+4 4 F d
+From df1 and df2 create M:
+&gt;M
+Id Age Sex Code
+1 1 14 F a
+2 2 12 M b
+3 3 15 M c 4 4 10 F d
+ANS:
+# create df1
+df1 <- data.frame(Id = 1:4, Age = c(14, 12, 15, 10))
+
+# create df2
+df2 <- data.frame(Id = 1:4, Sex = c("F", "M", "M", "F"), Code = letters[1:4])
+# merge df1 and df2
+M <- merge(df1, df2, by = "Id")
+
+# reorder the columns
+M <- M[, c("Id", "Age", "Sex", "Code")]
+4.Create a data frame df3:
+&gt; df3 id2
+score 1 4
+100
+2 3 98
+3 2 94
+4 1 99
+From M (used in Exercise-3) and df3 create N:
+
+Id Age Sex Code score
+1 1 14 F a 99
+2 2 12 M b 94
+3 3 15 M c 98 4 4 10 F d 100
+ANS:
+# create df3
+df3 <- data.frame(id2 = 1:4, score = c(100, 98, 94, 99))
+# merge M and df3
+N <- merge(M, df3, by.x = "Id", by.y = "id2")
+
+# reorder the columns
+N <- N[, c("Id", "Age", "Sex", "Code", "score")]
+5.Consider the previous one data frame N:
+1) Remove the variables Sex and Code
+2) From N, create a data frame:
+values ind
+1 1 Id
+2 2 Id
+3 3 Id
+4 4 Id
+5 14 Age
+6 12 Age
+7 15 Age
+8 10 Age
+9 99 score
+10 94 score
+11 98 score
+12 100 score
+ANS:
+N <- N[, c("Id", "Age", "score")]
+# create a vector of the column names
+colnames <- c("Id", "Age", "score")
+
+# create a vector of the variable names
+varnames <- rep(colnames, each = nrow(N))
+
+# create a vector of the variable values
+values <- as.vector(N)
+
+# combine the variable names and values into a data frame
+df <- data.frame(values, ind = varnames)
+6.For this exercise, we’ll use the (built-in) dataset trees.
+a) Make sure the object is a data frame, if not change it to a data frame.
+b) Create a new data frame A:
+&gt;A
+Girth Height Volume
+mean_tree 13.24839 76 30.17097
+min_tree 8.30000 63 10.20000
+max_tree 20.60000 87 77.00000
+sum_tree 410.70000 2356 935.30000
+ANS:
+# load the trees dataset
+data(trees)
+
+# check if trees is a data frame and convert if needed
+if (!is.data.frame(trees)) {
+  trees <- as.data.frame(trees)
+}
+
+# create the new data frame A
+A <- data.frame(
+  Girth = c(mean(trees$Girth), min(trees$Girth), max(trees$Girth), sum(trees$Girth)),
+  Height = c(mean(trees$Height), min(trees$Height), max(trees$Height), sum(trees$Height)),
+  Volume = c(mean(trees$Volume), min(trees$Volume), max(trees$Volume), sum(trees$Volume))
+)
+rownames(A) <- c("mean_tree", "min_tree", "max_tree", "sum_tree")
+7.Consider the data frame A:
+1)Order the entire data frame by the first column.
+2)Rename the row names as follows: mean, min, max, tree
+ANS:
+A <- A[order(A[,1]), ]
+rownames(A) <- c("mean", "min", "max", "tree")
+# Order the data frame by the first column
+A <- A[order(A[,1]), ]
+
+# Rename the row names
+rownames(A) <- c("mean", "min", "max", "tree")
+
+# View the resulting data frame
+A
+8.Create an empty data frame with column types:
+&gt;df
+IntsLogicals Doubles Characters
+(or 0-length row.names)
+ANS:
+df <- data.frame(Ints = integer(),
+                 Logicals = logical(),
+                 Doubles = numeric(),
+                 Characters = character(),
+                 stringsAsFactors = FALSE)
+9.Create a data frame XY
+X=c(1,2,3,1,4,5,2)
+Y=c(0,3,2,0,5,9,3)
+&gt; XY
+X Y
+1 1 0
+2 2 3
+3 3 2
+4 1 0
+5 4 5
+6 5 9
+7 2 3
+1) look at duplicated elements using a provided R function.
+2) keep only the unique lines on XY using a provided R function.
+ANS:
+XY[duplicated(XY), ]
+XY_unique <- unique(XY)
+10.Use the (built-in) dataset Titanic.
+a) Make sure the object is a data frame, if not change it to a data frame.
+b) Define a data frame with value 1st in Class variable, and value NO in Survived variable
+and variables Sex, Age and Freq.
+Sex Age Freq
+1 Male Child 0
+5 Female Child 0
+9 Male Adult 118
+13 Female Adult 4
+ANS:
+# Load the Titanic dataset
+data(Titanic)
+
+# Convert it to a data frame
+df <- as.data.frame(Titanic)
+
+# Define a new data frame with Class = 1st and Survived = NO
+df_new <- df[df$Class == "1st" & df$Survived == "No", c("Sex", "Age", "Freq")]
+
+# Show the resulting data frame
+df_new
+OUTPUT:
+     Sex   Age Freq
+1   Male Child    0
+5 Female Child    0
+9   Male Adult  118
+13 Female Adult    4
+11.Exercise 11 a)
+Create the following dataframes to merge:
+buildings&lt;- data.frame(location=c(1, 2, 3), name=c(&quot;building1&quot;, &quot;building2&quot;,&quot;building3&quot;))
+data &lt;-
+data.frame(survey=c(1,1,1,2,2,2),location=c(1,2,3,2,3,1),efficiency=c(51,64,70,7,80,58))
+
+The dataframes, buildingsand datahave a common key variable called, “location”.
+Use the merge() function to merge the two dataframes by “location”, into a new
+dataframe,“buildingStats”.
+Exercise 11 b)
+Give the dataframes different key variable names:
+buildings&lt;- data.frame(location=c(1, 2, 3), name=c(&quot;building1&quot;,&quot;building2&quot;, &quot;building3&quot;))
+data &lt;- data.frame(survey=c(1,1,1,2,2,2), LocationID=c(1,2,3,2,3,1),
+efficiency=c(51,64,70,71,80,58))
+The dataframes, buildings and data have corresponding variables called, location, and
+LocationID. Use the merge() function to merge the columns of the two dataframes by the
+corresponding variables.
+ANS:
+A)buildings <- data.frame(location=c(1, 2, 3), name=c("building1", "building2","building3"))
+data <- data.frame(survey=c(1,1,1,2,2,2),location=c(1,2,3,2,3,1),efficiency=c(51,64,70,7,80,58))
+
+buildingStats <- merge(buildings, data, by="location")
+B)buildings <- data.frame(location=c(1, 2, 3), name=c("building1","building2", "building3"))
+data <- data.frame(survey=c(1,1,1,2,2,2), LocationID=c(1,2,3,2,3,1), efficiency=c(51,64,70,71,80,58))
+
+# rename LocationID to location
+names(data)[names(data) == "LocationID"] <- "location"
+
+buildingStats <- merge(buildings, data, by="location")
+12.Exercise 12a)InnerJoin:
+The R merge() function automatically joins the frames by common variable names. In that
+case, demonstrate how you would perform the merge in Exercise 11a without specifying the
+key variable.
+Exercise 12b)OuterJoin:
+Merge the two dataframes from Exercise 11a. Use the “all=” parameter in the merge()
+function to return all records from both tables. Also, merge with the key variable, “location”.
+Exercise 12c)Left Join:
+Merge the two dataframes from Exercise 11a, and return all rows from the left table. Specify
+the matching key from Exercise 11a.
+Exercise 12d)Right Join:
+
+Merge the two dataframes from Exercise 11a, and return all rows from the right table. Use
+the matching key from Exercise 11a to return matching rows from the left table.
+Exercise 12e)Cross Join:
+Merge the two dataframes from Exercise 11a, into a “Cross Join” with each row of
+“buildings” matched to each row of “data”. What new column names are created in
+“buildingStats”?
+ANS:
+A) buildingStats <- merge(buildings, data)
+B)buildingStats <- merge(buildings, data, by = "location", all = TRUE)
+C)buildingStats <- merge(buildings, data, by = "location", all.x = TRUE)
+D)buildingStats <- merge(buildings, data, by = "location", all.y = TRUE)
+E)buildingStats <- merge(buildings, data, by = NULL)
+13.To join two data frames (datasets) vertically, use the rbind function. The two data frames must
+have the same variables, but they do not have to be in the same order.
+Merge the rows of the following two dataframes:
+buildings&lt;- data.frame(location=c(1, 2, 3), name=c(&quot;building1&quot;,
+&quot;building2&quot;, &quot;building3&quot;))
+buildings2 &lt;- data.frame(location=c(5, 4, 6), name=c(&quot;building5&quot;, &quot;building4&quot;, &quot;building6&quot;))
+Also, specify the new dataframe as, “allBuidings”.
+ANS:
+buildings <- data.frame(location=c(1, 2, 3), name=c("building1", "building2", "building3"))
+buildings2 <- data.frame(location=c(5, 4, 6), name=c("building5", "building4", "building6"))
+
+allBuildings <- rbind(buildings, buildings2)
+14.Create a new dataframe, buildings3, that has variables not found in the previous dataframes.
+buildings3 &lt;- data.frame(location=c(7, 8, 9), name=c(&quot;building7&quot;, &quot;building8&quot;, &quot;building9&quot;),
+startEfficiency=c(75,87,91))
+Create a new buildings3 without the extra variables.
+ANS:
+buildings3 <- data.frame(location=c(7, 8, 9), name=c("building7", "building8", "building9"), startEfficiency=c(75,87,91))
+
+buildings3 <- subset(buildings3, select=c(location, name))
+15.Instead of deleting the extra variables from buildings3 . append the buildings, and buildings2
+with the new variable in buildings3, (from Exercise 14). Set the new data in buildings and
+buildings2 , (from Exercise 13), to NA.
+ANS:
+# Create the new dataframe buildings3
+buildings3 <- data.frame(location=c(7, 8, 9), name=c("building7", "building8", "building9"), startEfficiency=c(75,87,91))
+
+# Append buildings and buildings2 with buildings3
+allBuildings <- cbind(rbind(buildings, buildings2), buildings3)
+
+# Set the new variable in buildings and buildings2 to NA
+buildings$startEfficiency <- NA
+buildings2$startEfficiency <- NA
+16.Construct the following data frame ‘country’.
+
+a) Reshape in R from wide to long:
+Reshape the above data frame from wide to long format in R.
+
+? data frame “country” is passed to reshape function
+? idvar is the variable which need to be left unaltered which is “countries”
+? varying are the ones that needs to converted from wide to long
+? v.names are the values that should be against the times in the resultant data frame.
+? new.row.names is used to assign row names to the resultant dataset
+? direction is, to which format the data needs to be transformed
+
+b) Reshape in R from long to wide:
+
+? data (country_w_to_L) which is in long format,  is passed to reshape function
+? idvar is the variable which need to be left unaltered, which is “countries”
+? timevar are the variables that needs to converted to wide format
+? v.names are the value variable
+? direction is, to which format the data needs to be transformed
+ANS:
+A)
+country_l_to_w <- reshape(country, idvar = "countries", 
+                          varying = list(c("2015", "2016", "2017", "2018", "2019")), 
+                          v.names = "GDP", times = c(2015, 2016, 2017, 2018, 2019),
+                          new.row.names = 1:25, direction = "long")
+B)
+country_w_to_l <- reshape(country_l_to_w, idvar = "countries", timevar = "time", 
+                          v.names = "GDP", direction = "wide")
+17.1. Melt airquality data set and display as a long – format data ?
+2. Melt airquality data and specify month and day to be “ID variables” ?
+3. Cast the molten airquality data set .
+4. Use cast function appropriately and compute the average of Ozone, Solar.R , Wind
+and temperature per month ?
+ANS:
+library(reshape2)
+
+# Load airquality dataset
+data(airquality)
+
+# Melt airquality dataset
+melted_airquality <- melt(airquality)
+
+# Display as long-format data
+head(melted_airquality)
+18.1. Consider the following data present. Create this file using windows notepad . Save the
+file as input.csv using the save As All files(*.*) option in notepad.
+
+2. Use appropriate R commands to read input.csv file.
+3. Analyze the CSV File and compute the following.
+a. Get the maximum salary
+b. Get the details of the person with max salary
+c. Get all the people working in IT department
+d. Get the persons in IT department whose salary is greater than 600
+e. Get the people who joined on or after 2014
+
+4. Get the people who joined on or after 2014 and write the output onto a file called
+output.csv
+ANS:
+data <- read.csv("input.csv")
+print(data)
+When we execute the above code, it produces the following result ?
+
+      id,   name,    salary,   start_date,     dept
+1      1    Rick     623.30    2012-01-01      IT
+2      2    Dan      515.20    2013-09-23      Operations
+3      3    Michelle 611.00    2014-11-15      IT
+4      4    Ryan     729.00    2014-05-11      HR
+5     NA    Gary     843.25    2015-03-27      Finance
+6      6    Nina     578.00    2013-05-21      IT
+7      7    Simon    632.80    2013-07-30      Operations
+8      8    Guru     722.50    2014-06-17      Finance
+data <- read.csv("input.csv")
+
+print(is.data.frame(data))
+print(ncol(data))
+print(nrow(data))
+When we execute the above code, it produces the following result ?
+
+[1] TRUE
+[1] 5
+[1] 8
+A)
+# Create a data frame.
+data <- read.csv("input.csv")
+
+# Get the max salary from data frame.
+sal <- max(data$salary)
+print(sal)
+When we execute the above code, it produces the following result ?
+
+[1] 843.25
+B)
+# Create a data frame.
+data <- read.csv("input.csv")
+
+# Get the max salary from data frame.
+sal <- max(data$salary)
+
+# Get the person detail having max salary.
+retval <- subset(data, salary == max(salary))
+print(retval)
+When we execute the above code, it produces the following result ?
+
+      id    name  salary  start_date    dept
+5     NA    Gary  843.25  2015-03-27    Finance
+C)
+# Create a data frame.
+data <- read.csv("input.csv")
+
+retval <- subset( data, dept == "IT")
+print(retval)
+When we execute the above code, it produces the following result ?
+
+       id   name      salary   start_date   dept
+1      1    Rick      623.3    2012-01-01   IT
+3      3    Michelle  611.0    2014-11-15   IT
+6      6    Nina      578.0    2013-05-21   IT
+D)
+# Create a data frame.
+data <- read.csv("input.csv")
+
+info <- subset(data, salary > 600 & dept == "IT")
+print(info)
+When we execute the above code, it produces the following result ?
+
+       id   name      salary   start_date   dept
+1      1    Rick      623.3    2012-01-01   IT
+3      3    Michelle  611.0    2014-11-15   IT
+E)
+# Create a data frame.
+data <- read.csv("input.csv")
+
+retval <- subset(data, as.Date(start_date) > as.Date("2014-01-01"))
+print(retval)
+When we execute the above code, it produces the following result ?
+
+       id   name     salary   start_date    dept
+3      3    Michelle 611.00   2014-11-15    IT
+4      4    Ryan     729.00   2014-05-11    HR
+5     NA    Gary     843.25   2015-03-27    Finance
+8      8    Guru     722.50   2014-06-17    Finance
